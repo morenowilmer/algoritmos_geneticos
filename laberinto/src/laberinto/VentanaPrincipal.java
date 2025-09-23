@@ -16,7 +16,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     public VentanaPrincipal() {
         initComponents();
-        panelLaberinto = new PanelLaberinto();
+//        panelLaberinto = new PanelLaberinto();
         panelLaberinto.setLocation(0, 153);
         panelLaberinto.setVisible(true);
         panelLaberinto.repaint();
