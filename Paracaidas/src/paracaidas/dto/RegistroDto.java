@@ -50,7 +50,7 @@ public class RegistroDto {
 
     @Override
     public String toString() {
-        return "RegistroDto{" + "velocidad=" + velocidad + ", peso=" + peso + ", velocidadViento=" + velocidadViento + ", angulo=" + angulo + ", probabilidad=" + probabilidad + '}';
+        return "" + velocidad + "    " + peso + "    " + velocidadViento + "    " + angulo + "    " + String.format("%.2f", probabilidad);
     }
     
     
