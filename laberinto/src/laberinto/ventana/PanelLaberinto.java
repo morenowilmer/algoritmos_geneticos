@@ -49,7 +49,7 @@ public class PanelLaberinto extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        int cellSize = 10;
+        int cellSize = 20;
         for (int y = 0; y < matrizResultante.length; y++) {
             for (int x = 0; x < matrizResultante[0].length; x++) {
                 if (matrizResultante[y][x] == 1) {
