@@ -38,7 +38,7 @@ public class PanelParacaidista extends JPanel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (dibujarParacaidista.getY()+50 <= getHeight()) {
-            if (dibujarParacaidista.getY()+50 >= getHeight()-20 && this.velocidadCaida > 5) {
+            if (dibujarParacaidista.getY()+50 >= getHeight()-20 && this.velocidadCaida >= 4) {
                 setBackground(Color.RED);
             }
             dibujarParacaidista.moverParacaidista();

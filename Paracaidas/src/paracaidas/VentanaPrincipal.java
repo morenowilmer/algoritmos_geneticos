@@ -1,5 +1,6 @@
 package paracaidas;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -143,20 +144,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             txtMensajes.setText("Debe generar datos");
             return;
         }
+        RegistroDto registro = paracaidas.getPoblacion().stream()
+                .sorted(Comparator.comparing(RegistroDto::getProbabilidad))
+                .findFirst().orElse(null);
         
-        for(RegistroDto registro : paracaidas.getPoblacion()) {
-            panelParacaidista.iniciar(registro.getProbabilidad());
-            panelParacaidista.repaint();
-            this.repaint();
-            try {
-                Thread.sleep(200);
-            } catch (Exception e) {
-                System.err.println("Error hilo");
-            }            
-        }
+        txtMensajes.setText(registro.toString());
+        
+        panelParacaidista.iniciar(registro.getProbabilidad());
+        panelParacaidista.repaint();
+        this.repaint();
     }//GEN-LAST:event_btnIniciarActionPerformed
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        txtMensajes.setText("");
         paracaidas.generarPoblacionInicial();
         List<RegistroDto> registros = paracaidas.getPoblacion();
         StringJoiner joiner = new StringJoiner(" \n");
