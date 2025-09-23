@@ -8,6 +8,7 @@ public class MovimientoLaberinto implements Cloneable {
     private List<PosicionMovimiento> movimientos;
     private int numMovimientos;
     private boolean sinSolucion;
+    private boolean solucion;
 
     public MovimientoLaberinto() {
         this.movimientos = new ArrayList<>();
@@ -32,6 +33,14 @@ public class MovimientoLaberinto implements Cloneable {
 
     public void setSinSolucion(boolean sinSolucion) {
         this.sinSolucion = sinSolucion;
+    }
+
+    public boolean isSolucion() {
+        return solucion;
+    }
+
+    public void setEsSolucion(boolean esSolucion) {
+        this.solucion = esSolucion;
     }
     
     @Override

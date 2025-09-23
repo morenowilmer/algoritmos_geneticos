@@ -1,8 +1,10 @@
-package laberinto;
+package laberinto.ventana;
 
+import laberinto.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import laberinto.dto.MovimientoLaberinto;
 import laberinto.dto.PosicionMovimiento;
@@ -16,22 +18,24 @@ public class Laberinto {
     private int posInicialY;
     private int posFinalX;
     private int posFinalY;
+    private boolean isHastaFinalizar;
+    private int totalIteraciones;
     private List<MovimientoLaberinto> poblacion;
     
-    public Laberinto(int iteraciones) {
+    /**
+     * Contrucctor de la clase laberinto
+     * 
+     * @param iteraciones Número de iteraciones a realizar
+     * @param isHastaFinalizar Indicar que es hasta encontrar solución y no con iteraciones
+     */
+    public Laberinto(int iteraciones, boolean isHastaFinalizar) {
         this.iteraciones = iteraciones;
         posInicialX = 1;
         posInicialY = 1;
+        this.totalIteraciones = 0;
+        this.isHastaFinalizar = isHastaFinalizar;
         
-        mapaLaberinto = new int[][] {
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,1,1,0,0,0,0,1},
-            {1,0,1,0,1,1,1,1,0,1},
-            {1,0,1,0,0,0,0,0,0,1},
-            {1,1,1,1,1,1,1,1,0,1},
-            {1,0,0,0,0,0,0,0,0,1},
-            {1,1,1,1,1,1,1,1,1,1}
-        };
+        mapaLaberinto = this.matrizInicial();
         
         posFinalX = mapaLaberinto.length-2;
         posFinalY = mapaLaberinto[0].length-2;
@@ -52,43 +56,75 @@ public class Laberinto {
         }        
     }
     
+    public int[][] matrizInicial() {
+        return new int[][] {
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1},
+            {1,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1},
+            {1,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,1},
+            {1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,1,1},
+            {1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,1},
+            {1,0,0,0,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1},
+            {1,0,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,0,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1},
+            {1,0,1,0,0,0,1,0,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1},
+            {1,0,1,1,1,1,1,0,1,0,0,0,0,0,1,0,1,1,1,0,0,0,1},
+            {1,0,1,0,0,0,0,0,1,0,1,1,1,0,1,0,1,0,0,0,1,0,1},
+            {1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1},
+            {1,0,1,0,1,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,1,0,1},
+            {1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,1,1,1,0,1,0,1},
+            {1,0,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0,0,0,0,1,0,1},
+            {1,0,1,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,0,1},
+            {1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,3},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+        };
+    }
+    
     public void resolverLaberinto() throws Exception{
-        int contador = 1;
+        int contador = 0;
         
-        while(contador < this.iteraciones) {
+        boolean bandera = true;
+        do {
+            contador++;
             List<MovimientoLaberinto> mejoresSoluciones = obtenerSoluconesPosibles();
-//            MovimientoLaberinto nuevaIteracion = (MovimientoLaberinto) mejoresSoluciones.get(0).clone();
             MovimientoLaberinto nuevaIteracion = mejoresSoluciones.get(0);
-            PosicionMovimiento siguienteMovimiento = realizarMovimiento(nuevaIteracion.getMovimientos().getLast());
-            nuevaIteracion.agregarMovimiento(siguienteMovimiento);
-            evaluarNumeroCaminos(nuevaIteracion);
-            
-//            poblacion.add(nuevaIteracion);
+            PosicionMovimiento siguienteMovimiento = realizarMovimiento(nuevaIteracion.getMovimientos().getLast());            
             
             if ((siguienteMovimiento.getPosX() == posFinalX) && (siguienteMovimiento.getPosY() == posFinalY)) {
-                contador = iteraciones;
+                if (this.isHastaFinalizar) {
+                    bandera = false;
+                }
+                nuevaIteracion.setEsSolucion(true);
                 System.out.println("Finalizo el juego");
-                llenarMatriz(nuevaIteracion);
-            }
-            contador++;
-        }
-        List<MovimientoLaberinto> mejoresSoluciones = obtenerMejoresSolucones();
+            } else if(isHastaFinalizar) {
+                bandera = true;
+            } else if(contador >= this.iteraciones) {
+                bandera = false;
+            }            
+            nuevaIteracion.agregarMovimiento(siguienteMovimiento);
+            evaluarNumeroCaminos(nuevaIteracion);
+        } while (bandera);
+        List<MovimientoLaberinto> mejoresSoluciones = obtenerMejoresSoluciones();
         llenarMatriz(mejoresSoluciones.get(0));
     }
     
-    public void llenarMatriz(MovimientoLaberinto movimientoLaberinto) {
+    public int[][] llenarMatriz(MovimientoLaberinto movimientoLaberinto) {
         List<PosicionMovimiento> posiciones = movimientoLaberinto.getMovimientos();
         
+        int[][] matrizResultado = this.matrizInicial();
         for (PosicionMovimiento pos : posiciones) {
-            mapaLaberinto[pos.getPosX()][pos.getPosY()] = 2;
+            matrizResultado[pos.getPosX()][pos.getPosY()] = 2;
         }
         
-        for (int i = 0; i < mapaLaberinto.length; i++) {
-            for (int j = 0; j < mapaLaberinto[0].length; j++) {
-                System.err.print(mapaLaberinto[i][j]);
-            }
-            System.err.println("");
-        }
+//        for (int i = 0; i < matrizResultado.length; i++) {
+//            for (int j = 0; j < matrizResultado[0].length; j++) {
+//                System.err.print(matrizResultado[i][j]);
+//            }
+//            System.err.println("");
+//        }
+//        
+        return matrizResultado;
     }
     
     public PosicionMovimiento realizarMovimiento(PosicionMovimiento ultimoMovimiento) {        
@@ -117,10 +153,19 @@ public class Laberinto {
                 .toList();
     }
     
-    public List<MovimientoLaberinto> obtenerMejoresSolucones() {
-        return poblacion.stream()
+    public List<MovimientoLaberinto> obtenerMejoresSoluciones() {
+        List<MovimientoLaberinto> finalizaron = new ArrayList<>();
+        for (MovimientoLaberinto mov : poblacion) {
+            if (mov.isSolucion()) {
+                finalizaron.add(mov);
+            }
+        }
+        List<MovimientoLaberinto> mejoresMovimientos = poblacion.stream()
                 .sorted(Comparator.comparingInt(MovimientoLaberinto::getNumMovimientos).reversed())
                 .toList();
+        
+        finalizaron.addAll(mejoresMovimientos);
+        return finalizaron;
     }
     
     private void evaluarNumeroCaminos(MovimientoLaberinto movimiento) {
